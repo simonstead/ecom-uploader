@@ -7,7 +7,8 @@ from event_stream import EventStream
 
 test_product = {
         'name': 'any_product_name',
-        'quantity': 10,
+        'quantity': '10',
+        'price': '50',
         'description': 'any product description'
         }
 
