@@ -1,8 +1,9 @@
 import csv
 from event_types import *
+from event_stream import EventStream
 
 class Uploader():
-    def __init__(self, event_stream):
+    def __init__(self, event_stream=EventStream()):
         self.stream = event_stream
 
     def product_upload(self):
