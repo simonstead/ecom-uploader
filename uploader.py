@@ -15,4 +15,6 @@ class Uploader():
         self.product_upload()
         with open(filename, 'r') as products_file:
             reader = csv.DictReader(products_file)
-            map(lambda p: self.product_add(p), reader)
+            for p in reader:
+                self.product_add(p)
+            #map(lambda p: self.product_add(p), reader)

@@ -13,26 +13,32 @@ test_product = {
 
 
 class UploaderTests(unittest.TestCase):
-    def test_can_fire_product_add_event(self):
-        event_stream = EventStream()
-        uploader = Uploader(event_stream)
-        uploader.product_add(test_product)
+    def setUp(self):
+        self.events = EventStream()
+        self.uploader = Uploader(self.events)
 
-        event = event_stream.stream[0]
-        self.assertTrue(type(event['timestamp']) is datetime)
+    def test_can_fire_product_add_event(self):
+        self.uploader.product_add(test_product)
+        event = self.events.stream()[0]
+
+        self.assertTrue(type(event['inserted_at']) is datetime)
         self.assertEqual(event['type'], PRODUCT_ADD)
 
     def test_can_read_product_csv(self):
-        events = EventStream()
-        uploader = Uploader(events)
-        uploader.read_products('data/test_products.csv')
-        self.assertEqual(len(events.stream), 4)
-        e = events.stream[1]
+        old_length = len(self.events.stream())
+        self.uploader.read_products('data/test_products.csv')
+        new_length = len(self.events.stream())
+
+        self.assertEqual(new_length, old_length + 4)
+
+        e = self.events.stream()[old_length + 1]
+        
         self.assertEqual(e['type'], PRODUCT_ADD)
         self.assertEqual(e['body']['name'], 'testname')
 
     def test_fires_new_upload_event(self):
-        events = EventStream()
-        uploader = Uploader(events)
-        uploader.read_products('data/test_products.csv')
-        self.assertEqual(events.stream[0]['type'], PRODUCT_UPLOAD)
+        old_length = len(self.events.stream())
+        self.uploader.read_products('data/test_products.csv')
+        
+        self.assertEqual(self.events.stream()[old_length]['type'], PRODUCT_UPLOAD)
+
